@@ -5,7 +5,11 @@ import { once } from 'node:events';
 import { createReceiver } from './server.mjs';
 
 test('verification, signatures, number isolation, durable deduplication and inbox access', async t => {
-  const config = { appSecret: 'test-secret', verifyToken: 'v'.repeat(32), inboxToken: 'i'.repeat(32), phoneNumberId: '1367620946438403', dbPath: ':memory:' };
+  const logs = [];
+  const originalLog = console.log;
+  console.log = line => logs.push(JSON.parse(line));
+  t.after(() => { console.log = originalLog; });
+  const config = { diagnostics: true, appSecret: 'test-secret', verifyToken: 'v'.repeat(32), inboxToken: 'i'.repeat(32), phoneNumberId: '1367620946438403', dbPath: ':memory:' };
   const server = createReceiver(config);
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   t.after(() => new Promise(resolve => server.close(resolve)));
@@ -29,4 +33,11 @@ test('verification, signatures, number isolation, durable deduplication and inbo
   r = await fetch(`${base}/api/events?after=${inbox.next_cursor}`, { headers: { authorization: `Bearer ${config.inboxToken}` } });
   assert.deepEqual((await r.json()).events, []);
   assert.equal((await send({ object: 'wrong' })).status, 400);
+  assert.ok(logs.some(row => row.status === 401));
+  assert.ok(logs.some(row => row.status === 200 && row.filtered_changes === 1));
+  assert.ok(logs.some(row => row.status === 200 && row.accepted_events === 2));
+  for (const row of logs) assert.deepEqual(Object.keys(row).sort(), ['accepted_events', 'filtered_changes', 'status', 'type']);
+  assert.equal(JSON.stringify(logs).includes('test-secret'), false);
+  assert.equal(JSON.stringify(logs).includes('Hello'), false);
+  assert.equal(JSON.stringify(logs).includes(config.phoneNumberId), false);
 });

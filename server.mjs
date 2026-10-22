@@ -38,6 +38,11 @@ export function createReceiver(config) {
   const server = http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url, 'http://localhost');
+      // Diagnostics contain only response codes and aggregate counts, never payloads.
+      const diagnostic = { type: 'whatsapp_webhook', accepted_events: 0, filtered_changes: 0 };
+      if (config.diagnostics && req.method === 'POST' && url.pathname === '/webhooks/whatsapp') {
+        res.once('finish', () => console.log(JSON.stringify({ ...diagnostic, status: res.statusCode })));
+      }
       if (req.method === 'GET' && url.pathname === '/privacy') return reply(res, 200, readFileSync(new URL('./privacy.html', import.meta.url), 'utf8'), 'text/html; charset=utf-8');
       if (req.method === 'GET' && url.pathname === '/healthz') return reply(res, 200, { status: 'ok', service: 'PillarSpec WhatsApp receiver' });
       if (url.pathname === '/webhooks/whatsapp' && req.method === 'GET') {
@@ -63,7 +68,10 @@ export function createReceiver(config) {
         const events = [];
         for (const entry of payload.entry) for (const change of entry.changes ?? []) {
           const value = change.value;
-          if (change.field !== 'messages' || value?.metadata?.phone_number_id !== config.phoneNumberId) continue;
+          if (change.field !== 'messages' || value?.metadata?.phone_number_id !== config.phoneNumberId) {
+            diagnostic.filtered_changes++;
+            continue;
+          }
           for (const [kind, records] of [['message', value.messages], ['status', value.statuses]]) {
             if (!Array.isArray(records)) continue;
             for (const record of records) {
@@ -78,6 +86,7 @@ export function createReceiver(config) {
         db.exec('BEGIN IMMEDIATE');
         try { for (const event of events) insert.run(...event); db.exec('COMMIT'); }
         catch (err) { db.exec('ROLLBACK'); throw err; }
+        diagnostic.accepted_events = events.length;
         return reply(res, 200, { received: true });
       }
       if (url.pathname === '/api/events' && req.method === 'GET') {
@@ -102,7 +111,8 @@ export function createReceiver(config) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const server = createReceiver({ appSecret: process.env.META_APP_SECRET, verifyToken: process.env.WEBHOOK_VERIFY_TOKEN,
     inboxToken: process.env.INBOX_API_TOKEN, phoneNumberId: process.env.ALLOWED_PHONE_NUMBER_ID,
-    dbPath: process.env.DB_PATH, retentionDays: process.env.RETENTION_DAYS });
+    dbPath: process.env.DB_PATH, retentionDays: process.env.RETENTION_DAYS,
+    diagnostics: process.env.WEBHOOK_DIAGNOSTICS === 'true' });
   server.listen(Number(process.env.PORT ?? 3000), process.env.HOST ?? '127.0.0.1', () => console.log('PillarSpec receiver is listening.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => server.close());
 }
