@@ -1,7 +1,7 @@
 import http from 'node:http';
 import { createHmac, createHash, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -38,6 +38,7 @@ export function createReceiver(config) {
   const server = http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url, 'http://localhost');
+      if (req.method === 'GET' && url.pathname === '/privacy') return reply(res, 200, readFileSync(new URL('./privacy.html', import.meta.url), 'utf8'), 'text/html; charset=utf-8');
       if (req.method === 'GET' && url.pathname === '/healthz') return reply(res, 200, { status: 'ok', service: 'PillarSpec WhatsApp receiver' });
       if (url.pathname === '/webhooks/whatsapp' && req.method === 'GET') {
         if (url.searchParams.get('hub.mode') !== 'subscribe' || !equal(url.searchParams.get('hub.verify_token'), config.verifyToken)) return reply(res, 403, { error: 'Verification failed' });
