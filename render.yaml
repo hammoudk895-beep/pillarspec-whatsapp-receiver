@@ -1,0 +1,27 @@
+# Paid service and persistent disk. Review Render's quote before activation.
+services:
+  - type: web
+    name: pillarspec-whatsapp-receiver
+    runtime: docker
+    plan: 0.5c-512mb
+    numInstances: 1
+    healthCheckPath: /healthz
+    disk:
+      name: pillarspec-events
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: DB_PATH
+        value: /app/data/events.sqlite
+      - key: ALLOWED_PHONE_NUMBER_ID
+        value: '1367620946438403'
+      - key: RETENTION_DAYS
+        value: '30'
+      - key: META_APP_SECRET
+        sync: false
+      - key: WEBHOOK_VERIFY_TOKEN
+        generateValue: true
+      - key: INBOX_API_TOKEN
+        generateValue: true
