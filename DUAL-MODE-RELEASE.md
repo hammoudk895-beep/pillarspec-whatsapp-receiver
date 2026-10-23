@@ -1,5 +1,17 @@
 # PillarSpec dual-mode release — 23 October 2026
 
+## Latest security and operations update
+
+The current live image is `sha256:7a327b1fc54978a73d2043eb39ef7d4db88fa75e60e3ca9a275afd38b82aeddf`. Separate owner-key plus authenticator step-up is configured and required for explicit `/mail`, `/calendar`, and `/drive` business-account reads. Enrollment is verified; a complete real account-command delivery test remains pending the owner's unlock and command. Customer behavior and normal private research are retained.
+
+The connected account is hammoudk895@gmail.com. Read-only access uses the existing Codex Gmail/Business Calendar/Drive connections via a local, five-minute bridge. Source content and queries are untrusted data; there are no send/edit/delete/share tools in that bridge. It requires this computer and Codex to be available. Account results are excluded from general research history.
+
+The Codex monitoring automation is active for health, human-review items, failures and backup age, with notifications on actionable changes only. A manual Fly snapshot completed; both databases were independently backed up, encrypted locally with AES-GCM, restored into disposable files and verified. Scheduled daily backups run through the local automation. Full snapshot-to-new-volume recovery is not claimed. See OPERATOR.md for recovery-key handling and platform limits.
+
+41 local tests and 11 deployed security/isolation tests passed. Eighteen live synthetic customer routing cases met safe expected outcomes; neutral service inquiries may use fixed intake or approved catalogue descriptions. All three languages produced bounded sourced owner research. No real messages were sent by these synthetic checks. Existing real owner mode has signed delivery evidence; privileged account-command delivery is tracked separately.
+
+The source archive includes production source, local operations/security/backup helpers and tests. Populated `.env` files, backup keys, encrypted backup data and private records are excluded. The eight original images remain local; the catalogue manifest and descriptions are included. Older deployment/test counts below describe the earlier release.
+
 The owner chose to extend the active Fly application `pillarspec-whatsapp-agent`.
 Meta currently routes the production number +961 78 701 617 to that application.
 The existing Render receiver is retained as the legacy receiver; its callback was not changed.
