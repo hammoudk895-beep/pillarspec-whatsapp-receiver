@@ -1,4 +1,5 @@
-# Paid service and persistent disk. Review Render's quote before activation.
+# Existing Render service. Runtime secrets and switches are configured on the service.
+# sync:false preserves values on subsequent Blueprint syncs.
 services:
   - type: web
     name: pillarspec-whatsapp-receiver
@@ -19,6 +20,30 @@ services:
         value: '1367620946438403'
       - key: RETENTION_DAYS
         value: '30'
+      - key: OWNER_PHONE_NUMBER
+        value: '+96176868315'
+      - key: MAX_REPLIES_PER_HOUR
+        value: '20'
+      - key: MAX_OWNER_REPLIES_PER_HOUR
+        value: '120'
+      - key: MAX_AI_CALLS_PER_DAY
+        value: '300'
+      - key: META_GRAPH_VERSION
+        value: 'v23.0'
+      - key: OUTBOUND_ENABLED
+        sync: false
+      - key: AUTO_REPLY_ENABLED
+        sync: false
+      - key: AI_ENABLED
+        sync: false
+      - key: RESEARCH_ENABLED
+        sync: false
+      - key: OPENAI_MODEL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
       - key: META_APP_SECRET
         sync: false
       - key: WEBHOOK_VERIFY_TOKEN
