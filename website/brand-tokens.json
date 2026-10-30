@@ -1,0 +1,32 @@
+{
+  "brand": "PillarSpec SARL",
+  "status": "approved",
+  "effective_date": "2026-10-30",
+  "version": "2.0",
+  "direction": "Earned independence with enduring standards",
+  "expression": "A name earned. A legacy upheld.",
+  "positioning": "Independent vision. Enduring standards.",
+  "core": {
+    "navy": "#0B1F33",
+    "steel": "#8795A1",
+    "copper": "#B78058",
+    "salt": "#EEF2F4"
+  },
+  "supporting_ui_tones": {
+    "navy_dark": "#071726",
+    "navy_light": "#122D46",
+    "steel_dark": "#314B60",
+    "text_muted": "#4B5B6B",
+    "steel_light": "#D7DFE5",
+    "copper_dark": "#684327"
+  },
+  "usage": {
+    "navy": "Primary fields, headings, body text and light-surface links",
+    "steel": "Secondary graphics, rules and details on dark surfaces",
+    "copper": "Restrained emphasis, logo accents, rules and buttons with navy text",
+    "salt": "Primary light surface and text on navy",
+    "accessibility": "Use navy on copper and salt; use copper on navy. Do not use copper or steel for small text on salt."
+  },
+  "scope": "PillarSpec branding only; other company brands remain independent.",
+  "logo_policy": "Preserve the existing logo geometry and company spelling; this update changes color only."
+}
